@@ -24,6 +24,21 @@
 
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
                 {{ $slot }}
+
+                <!-- Auth Links -->
+                <div class="mt-4 text-center text-sm text-gray-600">
+                    @if(Route::is('login'))
+                        {{ __('Henüz hesabınız yok mu?') }}
+                        <a href="{{ route('register') }}" class="text-blue-500 hover:text-blue-700">
+                            {{ __('Kaydol') }}
+                        </a>
+                    @else
+                        {{ __('Zaten hesabınız var mı?') }}
+                        <a href="{{ route('login') }}" class="text-blue-500 hover:text-blue-700">
+                            {{ __('Giriş Yap') }}
+                        </a>
+                    @endif
+                </div>
             </div>
         </div>
     </body>
