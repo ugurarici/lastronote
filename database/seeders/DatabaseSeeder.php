@@ -19,5 +19,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Her kullanıcı için varsayılan "Notlarım" dizinini oluştur
+        User::each(function ($user) {
+            $user->directories()->create([
+                'name' => 'Notlarım',
+                'is_default' => true
+            ]);
+        });
     }
 }

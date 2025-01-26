@@ -5,26 +5,23 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Note extends Model
+class Directory extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = [
-        'title',
-        'content',
-        'directory_id'
-    ];
+    protected $fillable = ['name'];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function directory(): BelongsTo
+    public function notes(): HasMany
     {
-        return $this->belongsTo(Directory::class);
+        return $this->hasMany(Note::class);
     }
 }

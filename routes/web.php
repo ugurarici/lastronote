@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\DirectoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,6 +21,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('notes', NoteController::class);
+    Route::resource('directories', DirectoryController::class)->except(['index', 'show', 'create', 'edit']);
 });
 
 require __DIR__.'/auth.php';

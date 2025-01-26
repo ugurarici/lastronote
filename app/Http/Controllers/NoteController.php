@@ -11,20 +11,42 @@ use Illuminate\View\View;
 
 class NoteController extends Controller
 {
-    public function index(): View
+    public function index(): RedirectResponse|View
     {
-        $notes = auth()->user()->notes()->latest()->paginate(10);
-        return view('notes.index', compact('notes'));
+        $latestNote = auth()->user()->notes()->latest()->first();
+
+        // Not yoksa, yeni not oluşturma sayfasına yönlendir
+        if (!$latestNote) {
+            return redirect()->route('notes.create');
+        }
+
+        // Not varsa, son notu göster
+        return redirect()->route('notes.show', $latestNote);
     }
 
     public function create(): View
     {
-        return view('notes.create');
+        // URL'den directory_id'yi al, yoksa kullanıcının varsayılan dizinini kullan
+        $directory_id = request('directory') ?? auth()->user()->directories()
+            ->where('is_default', true)
+            ->first()
+            ->id;
+
+        return view('notes.show', compact('directory_id'));
     }
 
     public function store(NoteRequest $request): RedirectResponse
     {
-        $note = auth()->user()->notes()->create($request->validated());
+        // Eğer directory_id gönderilmemişse, varsayılan dizini kullan
+        $directory_id = $request->directory_id ?? auth()->user()->directories()
+            ->where('is_default', true)
+            ->first()
+            ->id;
+
+        $note = auth()->user()->notes()->create([
+            ...$request->validated(),
+            'directory_id' => $directory_id
+        ]);
 
         return redirect()->route('notes.show', $note)
             ->with('success', 'Not başarıyla oluşturuldu.');
