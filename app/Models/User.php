@@ -54,6 +54,6 @@ class User extends Authenticatable
 
     public function directories(): HasMany
     {
-        return $this->hasMany(Directory::class);
+        return $this->hasMany(Directory::class)->withoutTrashed();
     }
 }

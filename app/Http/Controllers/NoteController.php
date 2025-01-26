@@ -24,24 +24,32 @@ class NoteController extends Controller
         return redirect()->route('notes.show', $latestNote);
     }
 
-    public function create(): View
+    private function getOrCreateDefaultDirectory()
     {
-        // URL'den directory_id'yi al, yoksa kullanıcının varsayılan dizinini kullan
-        $directory_id = request('directory') ?? auth()->user()->directories()
-            ->where('is_default', true)
-            ->first()
-            ->id;
+        return auth()->user()->directories()
+            ->firstOrCreate(
+                [
+                    'user_id' => auth()->id(),
+                    'is_default' => true
+                ],
+                [
+                    'name' => 'Notlarım'
+                ]
+            );
+    }
+
+    public function create(): View|RedirectResponse
+    {
+        $defaultDirectory = $this->getOrCreateDefaultDirectory();
+        $directory_id = request('directory') ?? $defaultDirectory->id;
 
         return view('notes.show', compact('directory_id'));
     }
 
     public function store(NoteRequest $request): RedirectResponse
     {
-        // Eğer directory_id gönderilmemişse, varsayılan dizini kullan
-        $directory_id = $request->directory_id ?? auth()->user()->directories()
-            ->where('is_default', true)
-            ->first()
-            ->id;
+        $defaultDirectory = $this->getOrCreateDefaultDirectory();
+        $directory_id = $request->directory_id ?? $defaultDirectory->id;
 
         $note = auth()->user()->notes()->create([
             ...$request->validated(),

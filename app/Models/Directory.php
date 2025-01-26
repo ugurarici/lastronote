@@ -13,7 +13,7 @@ class Directory extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'is_default'];
 
     public function user(): BelongsTo
     {
